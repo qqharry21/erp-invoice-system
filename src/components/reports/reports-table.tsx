@@ -12,10 +12,11 @@ import {
 } from '@/components/ui/table'
 import { format } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
+import { Decimal } from '@prisma/client/runtime/library'
 
 interface Claim {
   id: string
-  amount: number
+  amount: Decimal
   purpose: string
   status: string
   claimDate: Date
@@ -56,7 +57,7 @@ export function ReportsTable({ claims }: ReportsTableProps) {
     const rows = claims.map((claim) => [
       format(new Date(claim.claimDate), 'yyyy-MM-dd'),
       claim.user.name,
-      claim.amount.toString(),
+      claim.amount.toNumber().toString(),
       claim.purpose.replace(/\n/g, ' '),
       statusLabels[claim.status as keyof typeof statusLabels],
       claim.approvals.map((a) => a.approver.name).join(', ') || '-',
@@ -120,7 +121,7 @@ export function ReportsTable({ claims }: ReportsTableProps) {
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">
-                  NT$ {claim.amount.toLocaleString()}
+                  NT$ {claim.amount.toNumber().toLocaleString()}
                 </TableCell>
                 <TableCell className="max-w-xs truncate">{claim.purpose}</TableCell>
                 <TableCell>

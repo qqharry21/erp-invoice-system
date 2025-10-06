@@ -31,6 +31,7 @@ export default async function ReportsPage({
   const { status, from, to } = params
 
   // Build filter conditions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {}
 
   if (status && status !== 'ALL') {

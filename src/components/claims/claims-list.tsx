@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { formatDistance } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
+import { Decimal } from '@prisma/client/runtime/library'
 
 interface Claim {
   id: string
-  amount: number
+  amount: Decimal
   purpose: string
   status: string
   claimDate: Date
@@ -80,7 +81,7 @@ export function ClaimsList({ claims }: ClaimsListProps) {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-2xl font-bold">NT$ {claim.amount.toLocaleString()}</p>
+                <p className="text-2xl font-bold">NT$ {claim.amount.toNumber().toLocaleString()}</p>
                 <p className="text-sm text-gray-600">
                   {claim.attachments.length} 個附件
                 </p>
