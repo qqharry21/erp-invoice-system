@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app:*)",
+      "Bash(npm init:*)",
+      "Bash(supabase status:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma init:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm run dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enabledMcpjsonServers": [
+    "github",
+    "supabase",
+    "vercel"
+  ]
+}

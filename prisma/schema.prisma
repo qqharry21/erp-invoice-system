@@ -1,0 +1,125 @@
+// SmartClaim (智慧請款) - Database Schema
+// ERP Invoice Management System
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  EMPLOYEE
+  MANAGER
+  ADMIN
+}
+
+enum ClaimStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+// User Model
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  claims          Claim[]          @relation("UserClaims")
+  approvals       Approval[]       @relation("ApproverApprovals")
+  approvalHistory ApprovalHistory[]
+
+  @@map("users")
+}
+
+// Claim Model
+model Claim {
+  id          String      @id @default(uuid())
+  userId      String
+  amount      Decimal     @db.Decimal(12, 2)
+  purpose     String      @db.Text
+  status      ClaimStatus @default(DRAFT)
+  claimDate   DateTime    @default(now())
+  submittedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  user        User              @relation("UserClaims", fields: [userId], references: [id], onDelete: Cascade)
+  attachments Attachment[]
+  approvals   Approval[]
+  history     ApprovalHistory[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([claimDate])
+  @@map("claims")
+}
+
+// Attachment Model
+model Attachment {
+  id        String   @id @default(uuid())
+  claimId   String
+  fileName  String
+  fileUrl   String
+  fileSize  Int
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  // Relations
+  claim Claim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+
+  @@index([claimId])
+  @@map("attachments")
+}
+
+// Approval Model
+model Approval {
+  id         String      @id @default(uuid())
+  claimId    String
+  approverId String
+  status     ClaimStatus
+  comment    String?     @db.Text
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  // Relations
+  claim    Claim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  approver User  @relation("ApproverApprovals", fields: [approverId], references: [id], onDelete: Cascade)
+
+  @@index([claimId])
+  @@index([approverId])
+  @@map("approvals")
+}
+
+// Approval History Model (Audit Trail)
+model ApprovalHistory {
+  id         String      @id @default(uuid())
+  claimId    String
+  userId     String
+  action     String
+  fromStatus ClaimStatus?
+  toStatus   ClaimStatus
+  comment    String?     @db.Text
+  createdAt  DateTime    @default(now())
+
+  // Relations
+  claim Claim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([claimId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("approval_history")
+}
