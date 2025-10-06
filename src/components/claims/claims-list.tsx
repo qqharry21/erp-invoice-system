@@ -1,48 +1,54 @@
-'use client'
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { formatDistance } from 'date-fns'
-import { zhTW } from 'date-fns/locale'
-import { Decimal } from '@prisma/client/runtime/library'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { formatDistance } from "date-fns";
+import { zhTW } from "date-fns/locale";
+import { Decimal } from "@prisma/client/runtime/library";
 
 interface Claim {
-  id: string
-  amount: Decimal
-  purpose: string
-  status: string
-  claimDate: Date
-  createdAt: Date
-  attachments: { id: string }[]
+  id: string;
+  amount: Decimal;
+  purpose: string;
+  status: string;
+  claimDate: Date;
+  createdAt: Date;
+  attachments: { id: string }[];
   approvals: {
-    id: string
+    id: string;
     approver: {
-      name: string
-    }
-  }[]
+      name: string;
+    };
+  }[];
 }
 
 interface ClaimsListProps {
-  claims: Claim[]
+  claims: Claim[];
 }
 
 const statusColors = {
-  DRAFT: 'bg-gray-100 text-gray-800',
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  APPROVED: 'bg-green-100 text-green-800',
-  REJECTED: 'bg-red-100 text-red-800',
-  PAID: 'bg-blue-100 text-blue-800',
-}
+  DRAFT: "bg-gray-100 text-gray-800",
+  PENDING: "bg-yellow-100 text-yellow-800",
+  APPROVED: "bg-green-100 text-green-800",
+  REJECTED: "bg-red-100 text-red-800",
+  PAID: "bg-blue-100 text-blue-800",
+};
 
 const statusLabels = {
-  DRAFT: '草稿',
-  PENDING: '待審核',
-  APPROVED: '已核准',
-  REJECTED: '已拒絕',
-  PAID: '已付款',
-}
+  DRAFT: "草稿",
+  PENDING: "待審核",
+  APPROVED: "已核准",
+  REJECTED: "已拒絕",
+  PAID: "已付款",
+};
 
 export function ClaimsList({ claims }: ClaimsListProps) {
   if (claims.length === 0) {
@@ -55,7 +61,7 @@ export function ClaimsList({ claims }: ClaimsListProps) {
           </Button>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -73,7 +79,11 @@ export function ClaimsList({ claims }: ClaimsListProps) {
                   })}
                 </CardDescription>
               </div>
-              <Badge className={statusColors[claim.status as keyof typeof statusColors]}>
+              <Badge
+                className={
+                  statusColors[claim.status as keyof typeof statusColors]
+                }
+              >
                 {statusLabels[claim.status as keyof typeof statusLabels]}
               </Badge>
             </div>
@@ -81,7 +91,9 @@ export function ClaimsList({ claims }: ClaimsListProps) {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-2xl font-bold">NT$ {claim.amount.toNumber().toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  NT$ {claim.amount.toNumber().toLocaleString()}
+                </p>
                 <p className="text-sm text-gray-600">
                   {claim.attachments.length} 個附件
                 </p>
@@ -94,5 +106,5 @@ export function ClaimsList({ claims }: ClaimsListProps) {
         </Card>
       ))}
     </div>
-  )
+  );
 }

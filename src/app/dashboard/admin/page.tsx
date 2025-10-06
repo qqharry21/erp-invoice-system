@@ -1,29 +1,35 @@
-import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
-import { redirect } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { UserManagementTable } from '@/components/admin/user-management-table'
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { UserManagementTable } from "@/components/admin/user-management-table";
 
 export default async function AdminPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
   const dbUser = await prisma.user.findUnique({
     where: { email: user.email! },
-  })
+  });
 
-  if (!dbUser || dbUser.role !== 'ADMIN') {
-    redirect('/dashboard')
+  if (!dbUser || dbUser.role !== "ADMIN") {
+    redirect("/dashboard");
   }
 
   const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     include: {
       _count: {
         select: {
@@ -32,21 +38,21 @@ export default async function AdminPage() {
         },
       },
     },
-  })
+  });
 
   const stats = await prisma.$transaction([
     prisma.user.count(),
-    prisma.claim.count({ where: { status: 'PENDING' } }),
-    prisma.claim.count({ where: { status: 'APPROVED' } }),
+    prisma.claim.count({ where: { status: "PENDING" } }),
+    prisma.claim.count({ where: { status: "APPROVED" } }),
     prisma.claim.aggregate({
       _sum: {
         amount: true,
       },
       where: {
-        status: 'PAID',
+        status: "PAID",
       },
     }),
-  ])
+  ]);
 
   return (
     <div className="space-y-6">
@@ -105,5 +111,5 @@ export default async function AdminPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

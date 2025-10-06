@@ -14,9 +14,5 @@
     "deny": [],
     "ask": []
   },
-  "enabledMcpjsonServers": [
-    "github",
-    "supabase",
-    "vercel"
-  ]
+  "enabledMcpjsonServers": ["github", "supabase", "vercel"]
 }

@@ -72,17 +72,20 @@
 ### Installation Steps
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd erp-invoice-system
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start Supabase local services**
+
    ```bash
    supabase start
    ```
@@ -96,6 +99,7 @@
 4. **Set up environment variables**
 
    The `.env` file should already be configured for local development:
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-local-anon-key>
@@ -103,16 +107,19 @@
    ```
 
 5. **Run database migrations**
+
    ```bash
    npx prisma migrate deploy
    ```
 
 6. **Generate Prisma Client**
+
    ```bash
    npx prisma generate
    ```
 
 7. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -122,6 +129,7 @@
 ### Default Test Accounts
 
 Create your first account via the signup page. You can then:
+
 - Access admin panel at `/dashboard/admin` to change user roles
 - Test different role permissions (EMPLOYEE, MANAGER, ADMIN)
 

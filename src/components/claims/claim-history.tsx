@@ -1,37 +1,37 @@
-'use client'
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { format } from 'date-fns'
-import { zhTW } from 'date-fns/locale'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
+import { zhTW } from "date-fns/locale";
 
 interface HistoryItem {
-  id: string
-  action: string
-  fromStatus: string | null
-  toStatus: string
-  comment: string | null
-  createdAt: Date
+  id: string;
+  action: string;
+  fromStatus: string | null;
+  toStatus: string;
+  comment: string | null;
+  createdAt: Date;
   user: {
-    name: string
-    email: string
-  }
+    name: string;
+    email: string;
+  };
 }
 
 interface ClaimHistoryProps {
-  history: HistoryItem[]
+  history: HistoryItem[];
 }
 
 const statusLabels = {
-  DRAFT: '草稿',
-  PENDING: '待審核',
-  APPROVED: '已核准',
-  REJECTED: '已拒絕',
-  PAID: '已付款',
-}
+  DRAFT: "草稿",
+  PENDING: "待審核",
+  APPROVED: "已核准",
+  REJECTED: "已拒絕",
+  PAID: "已付款",
+};
 
 export function ClaimHistory({ history }: ClaimHistoryProps) {
   if (history.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -55,18 +55,24 @@ export function ClaimHistory({ history }: ClaimHistoryProps) {
                     <div>
                       <p className="font-medium">{item.user.name}</p>
                       <p className="text-sm text-gray-500">
-                        {format(new Date(item.createdAt), 'PPP p', { locale: zhTW })}
+                        {format(new Date(item.createdAt), "PPP p", {
+                          locale: zhTW,
+                        })}
                       </p>
                     </div>
                   </div>
                   <div className="mt-2 text-sm">
                     {item.fromStatus && (
                       <span>
-                        從{' '}
+                        從{" "}
                         <span className="font-medium">
-                          {statusLabels[item.fromStatus as keyof typeof statusLabels]}
-                        </span>{' '}
-                        變更為{' '}
+                          {
+                            statusLabels[
+                              item.fromStatus as keyof typeof statusLabels
+                            ]
+                          }
+                        </span>{" "}
+                        變更為{" "}
                       </span>
                     )}
                     <span className="font-medium">
@@ -85,5 +91,5 @@ export function ClaimHistory({ history }: ClaimHistoryProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

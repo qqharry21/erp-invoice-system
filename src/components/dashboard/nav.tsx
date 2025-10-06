@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import { User } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface DashboardNavProps {
-  user: User
-  userRole: string
+  user: User;
+  userRole: string;
 }
 
 export function DashboardNav({ user, userRole }: DashboardNavProps) {
-  const router = useRouter()
-  const supabase = createClient()
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-  }
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <nav className="border-b bg-white">
@@ -47,7 +47,7 @@ export function DashboardNav({ user, userRole }: DashboardNavProps) {
             >
               新增請款
             </Link>
-            {(userRole === 'MANAGER' || userRole === 'ADMIN') && (
+            {(userRole === "MANAGER" || userRole === "ADMIN") && (
               <Link
                 href="/dashboard/reports"
                 className="text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -55,7 +55,7 @@ export function DashboardNav({ user, userRole }: DashboardNavProps) {
                 報表
               </Link>
             )}
-            {userRole === 'ADMIN' && (
+            {userRole === "ADMIN" && (
               <Link
                 href="/dashboard/admin"
                 className="text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -66,14 +66,12 @@ export function DashboardNav({ user, userRole }: DashboardNavProps) {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">
-            {user.email}
-          </span>
+          <span className="text-sm text-gray-600">{user.email}</span>
           <Button variant="outline" size="sm" onClick={handleLogout}>
             登出
           </Button>
         </div>
       </div>
     </nav>
-  )
+  );
 }

@@ -92,18 +92,18 @@ Located in `src/app/api/**/__tests__/`
 Tests API endpoints, request/response handling, and error cases.
 
 ```typescript
-import { POST } from '../route'
-import { NextRequest } from 'next/server'
+import { POST } from "../route";
+import { NextRequest } from "next/server";
 
-test('creates a new claim successfully', async () => {
-  const request = new NextRequest('http://localhost/api/claims', {
-    method: 'POST',
-    body: JSON.stringify({ amount: 1000, purpose: 'Test' }),
-  })
+test("creates a new claim successfully", async () => {
+  const request = new NextRequest("http://localhost/api/claims", {
+    method: "POST",
+    body: JSON.stringify({ amount: 1000, purpose: "Test" }),
+  });
 
-  const response = await POST(request)
-  expect(response.status).toBe(201)
-})
+  const response = await POST(request);
+  expect(response.status).toBe(201);
+});
 ```
 
 ### 3. E2E Tests
@@ -115,12 +115,12 @@ Located in `e2e/`
 Tests complete user workflows across multiple pages.
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test('should display login page', async ({ page }) => {
-  await page.goto('/login')
-  await expect(page.getByText('SmartClaim 登入')).toBeVisible()
-})
+test("should display login page", async ({ page }) => {
+  await page.goto("/login");
+  await expect(page.getByText("SmartClaim 登入")).toBeVisible();
+});
 ```
 
 ## Writing Tests
@@ -151,43 +151,43 @@ describe('MyComponent', () => {
 ### API Test Example
 
 ```typescript
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi } from "vitest";
 
 // Mock external dependencies
-vi.mock('@/lib/supabase/server', () => ({
+vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(() => ({
     auth: { getUser: vi.fn() },
   })),
-}))
+}));
 
-describe('/api/endpoint', () => {
-  it('returns correct response', async () => {
+describe("/api/endpoint", () => {
+  it("returns correct response", async () => {
     // Test implementation
-  })
-})
+  });
+});
 ```
 
 ### E2E Test Example
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test('user can complete workflow', async ({ page }) => {
-  await page.goto('/dashboard')
+test("user can complete workflow", async ({ page }) => {
+  await page.goto("/dashboard");
 
   // Navigate
-  await page.click('text=新增請款')
+  await page.click("text=新增請款");
 
   // Fill form
-  await page.fill('[name="amount"]', '1000')
-  await page.fill('[name="purpose"]', 'Test purpose')
+  await page.fill('[name="amount"]', "1000");
+  await page.fill('[name="purpose"]', "Test purpose");
 
   // Submit
-  await page.click('button[type="submit"]')
+  await page.click('button[type="submit"]');
 
   // Verify
-  await expect(page).toHaveURL('/dashboard/claims')
-})
+  await expect(page).toHaveURL("/dashboard/claims");
+});
 ```
 
 ## Mocking
@@ -202,20 +202,20 @@ Defined in `src/test/setup.ts`:
 ### Test-Specific Mocks
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from "vitest";
 
 // Mock a module
-vi.mock('@/lib/prisma', () => ({
+vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
     },
   },
-}))
+}));
 
 // Mock a function
-const mockFn = vi.fn()
-mockFn.mockResolvedValue({ id: '123' })
+const mockFn = vi.fn();
+mockFn.mockResolvedValue({ id: "123" });
 ```
 
 ## Coverage Requirements
@@ -252,7 +252,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm ci
@@ -289,24 +289,24 @@ For E2E tests requiring authentication, create a test helper:
 
 ```typescript
 // e2e/helpers/auth.ts
-import { Page } from '@playwright/test'
+import { Page } from "@playwright/test";
 
 export async function loginAsTestUser(page: Page) {
-  await page.goto('/login')
-  await page.fill('[type="email"]', process.env.TEST_USER_EMAIL)
-  await page.fill('[type="password"]', process.env.TEST_USER_PASSWORD)
-  await page.click('button[type="submit"]')
-  await page.waitForURL('/dashboard')
+  await page.goto("/login");
+  await page.fill('[type="email"]', process.env.TEST_USER_EMAIL);
+  await page.fill('[type="password"]', process.env.TEST_USER_PASSWORD);
+  await page.click('button[type="submit"]');
+  await page.waitForURL("/dashboard");
 }
 ```
 
 Then use in tests:
 
 ```typescript
-test('authenticated user can create claim', async ({ page }) => {
-  await loginAsTestUser(page)
+test("authenticated user can create claim", async ({ page }) => {
+  await loginAsTestUser(page);
   // ... test implementation
-})
+});
 ```
 
 ## Debugging Tests

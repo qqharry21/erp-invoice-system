@@ -1,39 +1,46 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Link from "next/link";
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [name, setName] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const supabase = createClient()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
 
     if (password !== confirmPassword) {
-      setError('密碼不符合')
-      return
+      setError("密碼不符合");
+      return;
     }
 
     if (password.length < 6) {
-      setError('密碼長度至少需要 6 個字元')
-      return
+      setError("密碼長度至少需要 6 個字元");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -44,29 +51,29 @@ export default function SignupPage() {
             name,
           },
         },
-      })
+      });
 
       if (error) {
-        setError(error.message)
-        return
+        setError(error.message);
+        return;
       }
 
       if (data?.user) {
         // Check if email confirmation is required
         if (data.user.identities && data.user.identities.length === 0) {
-          setError('此電子郵件已被註冊')
-          return
+          setError("此電子郵件已被註冊");
+          return;
         }
 
-        router.push('/dashboard')
-        router.refresh()
+        router.push("/dashboard");
+        router.refresh();
       }
     } catch (err) {
-      setError('註冊時發生錯誤')
+      setError("註冊時發生錯誤");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
@@ -131,10 +138,10 @@ export default function SignupPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? '註冊中...' : '註冊'}
+              {loading ? "註冊中..." : "註冊"}
             </Button>
             <div className="text-sm text-center text-gray-600">
-              已經有帳號了？{' '}
+              已經有帳號了？{" "}
               <Link href="/login" className="text-blue-600 hover:underline">
                 登入
               </Link>
@@ -143,5 +150,5 @@ export default function SignupPage() {
         </form>
       </Card>
     </div>
-  )
+  );
 }

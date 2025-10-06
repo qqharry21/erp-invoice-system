@@ -1,19 +1,19 @@
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach, beforeAll, vi } from 'vitest'
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, vi } from "vitest";
 
 // Cleanup after each test
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // Mock scrollIntoView for jsdom
 beforeAll(() => {
-  Element.prototype.scrollIntoView = vi.fn()
-})
+  Element.prototype.scrollIntoView = vi.fn();
+});
 
 // Mock Next.js router
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
@@ -25,11 +25,11 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => ({
     get: vi.fn(),
   }),
-  usePathname: () => '/',
-}))
+  usePathname: () => "/",
+}));
 
 // Mock Supabase client
-vi.mock('@/lib/supabase/client', () => ({
+vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: {
       signUp: vi.fn(),
@@ -44,4 +44,4 @@ vi.mock('@/lib/supabase/client', () => ({
       })),
     },
   }),
-}))
+}));

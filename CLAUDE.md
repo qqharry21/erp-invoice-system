@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 SmartClaim (智慧請款) - 內部請款與審批管理系統 for small to medium enterprises. Built with Next.js 15 (App Router), Supabase/PostgreSQL, and TailwindCSS v4 + ShadCN UI.
 
 ### Core Features
+
 - User authentication and role-based access (`EMPLOYEE`, `MANAGER`, `ADMIN`)
 - Invoice claim management with workflow states: `DRAFT` → `PENDING` → `APPROVED`/`REJECTED` → `PAID`
 - Multi-invoice image upload (jpg/png/pdf) with Supabase Storage / AWS S3
@@ -28,6 +29,7 @@ SmartClaim (智慧請款) - 內部請款與審批管理系統 for small to mediu
 ## Development Commands
 
 ### Supabase Local Development
+
 ```bash
 # Start local Supabase services
 supabase start
@@ -43,6 +45,7 @@ supabase stop
 ```
 
 ### Local Service Ports
+
 - API: `54321`
 - Database: `54322`
 - Studio: `54323`
@@ -55,12 +58,15 @@ Uses Supabase Auth with email/password. Site URL configured for `http://127.0.0.
 ## Database Schema Considerations
 
 ### User Roles
+
 Three role types defined: `EMPLOYEE`, `MANAGER`, `ADMIN`
 
 ### Invoice Claim States
+
 State machine flow: `DRAFT` → `PENDING` → `APPROVED`/`REJECTED` → `PAID`
 
 ### Key Entities
+
 - Users (with role assignment)
 - Claims/Invoices (with status, amount, purpose, dates)
 - Invoice attachments (stored in Supabase Storage/S3)
@@ -69,6 +75,7 @@ State machine flow: `DRAFT` → `PENDING` → `APPROVED`/`REJECTED` → `PAID`
 ## Storage Configuration
 
 Supabase Storage configured with:
+
 - Max file size: 50MiB
 - Image transformation enabled
 - Supports invoice uploads (jpg/png/pdf)

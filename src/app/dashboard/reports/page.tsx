@@ -1,49 +1,55 @@
-import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
-import { redirect } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ReportsFilter } from '@/components/reports/reports-filter'
-import { ReportsTable } from '@/components/reports/reports-table'
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ReportsFilter } from "@/components/reports/reports-filter";
+import { ReportsTable } from "@/components/reports/reports-table";
 
 export default async function ReportsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; from?: string; to?: string }>
+  searchParams: Promise<{ status?: string; from?: string; to?: string }>;
 }) {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
   const dbUser = await prisma.user.findUnique({
     where: { email: user.email! },
-  })
+  });
 
-  if (!dbUser || (dbUser.role !== 'MANAGER' && dbUser.role !== 'ADMIN')) {
-    redirect('/dashboard')
+  if (!dbUser || (dbUser.role !== "MANAGER" && dbUser.role !== "ADMIN")) {
+    redirect("/dashboard");
   }
 
-  const params = await searchParams
-  const { status, from, to } = params
+  const params = await searchParams;
+  const { status, from, to } = params;
 
   // Build filter conditions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: any = {}
+  const where: any = {};
 
-  if (status && status !== 'ALL') {
-    where.status = status
+  if (status && status !== "ALL") {
+    where.status = status;
   }
 
   if (from) {
-    where.claimDate = { ...where.claimDate, gte: new Date(from) }
+    where.claimDate = { ...where.claimDate, gte: new Date(from) };
   }
 
   if (to) {
-    where.claimDate = { ...where.claimDate, lte: new Date(to) }
+    where.claimDate = { ...where.claimDate, lte: new Date(to) };
   }
 
   // Fetch claims with filters
@@ -58,18 +64,18 @@ export default async function ReportsPage({
         },
       },
     },
-    orderBy: { claimDate: 'desc' },
-  })
+    orderBy: { claimDate: "desc" },
+  });
 
   // Calculate statistics
   const stats = {
     total: claims.length,
     totalAmount: claims.reduce((sum, claim) => sum + Number(claim.amount), 0),
-    pending: claims.filter((c) => c.status === 'PENDING').length,
-    approved: claims.filter((c) => c.status === 'APPROVED').length,
-    rejected: claims.filter((c) => c.status === 'REJECTED').length,
-    paid: claims.filter((c) => c.status === 'PAID').length,
-  }
+    pending: claims.filter((c) => c.status === "PENDING").length,
+    approved: claims.filter((c) => c.status === "APPROVED").length,
+    rejected: claims.filter((c) => c.status === "REJECTED").length,
+    paid: claims.filter((c) => c.status === "PAID").length,
+  };
 
   return (
     <div className="space-y-6">
@@ -93,7 +99,9 @@ export default async function ReportsPage({
             <CardTitle className="text-sm font-medium">總金額</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">NT$ {stats.totalAmount.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              NT$ {stats.totalAmount.toLocaleString()}
+            </div>
           </CardContent>
         </Card>
 
@@ -102,7 +110,9 @@ export default async function ReportsPage({
             <CardTitle className="text-sm font-medium">待審核</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {stats.pending}
+            </div>
           </CardContent>
         </Card>
 
@@ -111,7 +121,9 @@ export default async function ReportsPage({
             <CardTitle className="text-sm font-medium">已核准</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.approved}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -136,5 +148,5 @@ export default async function ReportsPage({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

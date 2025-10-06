@@ -1,50 +1,50 @@
-'use client'
+"use client";
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useState } from 'react'
+} from "@/components/ui/select";
+import { useState } from "react";
 
 export function ReportsFilter() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [status, setStatus] = useState(searchParams.get('status') || 'ALL')
-  const [from, setFrom] = useState(searchParams.get('from') || '')
-  const [to, setTo] = useState(searchParams.get('to') || '')
+  const [status, setStatus] = useState(searchParams.get("status") || "ALL");
+  const [from, setFrom] = useState(searchParams.get("from") || "");
+  const [to, setTo] = useState(searchParams.get("to") || "");
 
   const handleApplyFilter = () => {
-    const params = new URLSearchParams()
+    const params = new URLSearchParams();
 
-    if (status !== 'ALL') {
-      params.set('status', status)
+    if (status !== "ALL") {
+      params.set("status", status);
     }
 
     if (from) {
-      params.set('from', from)
+      params.set("from", from);
     }
 
     if (to) {
-      params.set('to', to)
+      params.set("to", to);
     }
 
-    router.push(`/dashboard/reports?${params.toString()}`)
-  }
+    router.push(`/dashboard/reports?${params.toString()}`);
+  };
 
   const handleReset = () => {
-    setStatus('ALL')
-    setFrom('')
-    setTo('')
-    router.push('/dashboard/reports')
-  }
+    setStatus("ALL");
+    setFrom("");
+    setTo("");
+    router.push("/dashboard/reports");
+  };
 
   return (
     <div className="grid gap-4 md:grid-cols-4">
@@ -97,5 +97,5 @@ export function ReportsFilter() {
         </div>
       </div>
     </div>
-  )
+  );
 }

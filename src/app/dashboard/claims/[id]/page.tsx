@@ -1,50 +1,56 @@
-import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
-import { notFound, redirect } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { ClaimApprovalActions } from '@/components/claims/claim-approval-actions'
-import { ClaimHistory } from '@/components/claims/claim-history'
-import { format } from 'date-fns'
-import { zhTW } from 'date-fns/locale'
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
+import { notFound, redirect } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ClaimApprovalActions } from "@/components/claims/claim-approval-actions";
+import { ClaimHistory } from "@/components/claims/claim-history";
+import { format } from "date-fns";
+import { zhTW } from "date-fns/locale";
 
 const statusColors = {
-  DRAFT: 'bg-gray-100 text-gray-800',
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  APPROVED: 'bg-green-100 text-green-800',
-  REJECTED: 'bg-red-100 text-red-800',
-  PAID: 'bg-blue-100 text-blue-800',
-}
+  DRAFT: "bg-gray-100 text-gray-800",
+  PENDING: "bg-yellow-100 text-yellow-800",
+  APPROVED: "bg-green-100 text-green-800",
+  REJECTED: "bg-red-100 text-red-800",
+  PAID: "bg-blue-100 text-blue-800",
+};
 
 const statusLabels = {
-  DRAFT: '草稿',
-  PENDING: '待審核',
-  APPROVED: '已核准',
-  REJECTED: '已拒絕',
-  PAID: '已付款',
-}
+  DRAFT: "草稿",
+  PENDING: "待審核",
+  APPROVED: "已核准",
+  REJECTED: "已拒絕",
+  PAID: "已付款",
+};
 
 export default async function ClaimDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
-  const supabase = await createClient()
+  const { id } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
   const dbUser = await prisma.user.findUnique({
     where: { email: user.email! },
-  })
+  });
 
   if (!dbUser) {
-    redirect('/login')
+    redirect("/login");
   }
 
   const claim = await prisma.claim.findUnique({
@@ -56,26 +62,26 @@ export default async function ClaimDetailPage({
         include: {
           approver: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       },
       history: {
         include: {
           user: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       },
     },
-  })
+  });
 
   if (!claim) {
-    notFound()
+    notFound();
   }
 
   // Check if user can approve (must be manager or admin, and not the claim owner)
   const canApprove =
-    (dbUser.role === 'MANAGER' || dbUser.role === 'ADMIN') &&
+    (dbUser.role === "MANAGER" || dbUser.role === "ADMIN") &&
     claim.userId !== dbUser.id &&
-    claim.status === 'PENDING'
+    claim.status === "PENDING";
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -84,7 +90,9 @@ export default async function ClaimDetailPage({
           <h1 className="text-3xl font-bold">請款詳情</h1>
           <p className="text-gray-600">查看請款的完整資訊</p>
         </div>
-        <Badge className={statusColors[claim.status as keyof typeof statusColors]}>
+        <Badge
+          className={statusColors[claim.status as keyof typeof statusColors]}
+        >
           {statusLabels[claim.status as keyof typeof statusLabels]}
         </Badge>
       </div>
@@ -102,19 +110,23 @@ export default async function ClaimDetailPage({
             </div>
             <div>
               <p className="text-sm text-gray-600">請款金額</p>
-              <p className="text-2xl font-bold">NT$ {claim.amount.toLocaleString()}</p>
+              <p className="text-2xl font-bold">
+                NT$ {claim.amount.toLocaleString()}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-600">請款日期</p>
               <p className="font-medium">
-                {format(new Date(claim.claimDate), 'PPP', { locale: zhTW })}
+                {format(new Date(claim.claimDate), "PPP", { locale: zhTW })}
               </p>
             </div>
             {claim.submittedAt && (
               <div>
                 <p className="text-sm text-gray-600">提交時間</p>
                 <p className="font-medium">
-                  {format(new Date(claim.submittedAt), 'PPP p', { locale: zhTW })}
+                  {format(new Date(claim.submittedAt), "PPP p", {
+                    locale: zhTW,
+                  })}
                 </p>
               </div>
             )}
@@ -149,7 +161,7 @@ export default async function ClaimDetailPage({
                 >
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      {attachment.mimeType.startsWith('image/') ? (
+                      {attachment.mimeType.startsWith("image/") ? (
                         <img
                           src={attachment.fileUrl}
                           alt={attachment.fileName}
@@ -157,12 +169,16 @@ export default async function ClaimDetailPage({
                         />
                       ) : (
                         <div className="h-16 w-16 bg-red-100 rounded flex items-center justify-center">
-                          <span className="text-red-600 font-bold text-xs">PDF</span>
+                          <span className="text-red-600 font-bold text-xs">
+                            PDF
+                          </span>
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{attachment.fileName}</p>
+                      <p className="text-sm font-medium truncate">
+                        {attachment.fileName}
+                      </p>
                       <p className="text-xs text-gray-500">
                         {(attachment.fileSize / 1024).toFixed(1)} KB
                       </p>
@@ -187,16 +203,31 @@ export default async function ClaimDetailPage({
           <CardContent>
             <div className="space-y-4">
               {claim.approvals.map((approval) => (
-                <div key={approval.id} className="border-l-4 border-gray-300 pl-4">
+                <div
+                  key={approval.id}
+                  className="border-l-4 border-gray-300 pl-4"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <p className="font-medium">{approval.approver.name}</p>
                       <p className="text-sm text-gray-500">
-                        {format(new Date(approval.createdAt), 'PPP p', { locale: zhTW })}
+                        {format(new Date(approval.createdAt), "PPP p", {
+                          locale: zhTW,
+                        })}
                       </p>
                     </div>
-                    <Badge className={statusColors[approval.status as keyof typeof statusColors]}>
-                      {statusLabels[approval.status as keyof typeof statusLabels]}
+                    <Badge
+                      className={
+                        statusColors[
+                          approval.status as keyof typeof statusColors
+                        ]
+                      }
+                    >
+                      {
+                        statusLabels[
+                          approval.status as keyof typeof statusLabels
+                        ]
+                      }
                     </Badge>
                   </div>
                   {approval.comment && (
@@ -211,5 +242,5 @@ export default async function ClaimDetailPage({
 
       <ClaimHistory history={claim.history} />
     </div>
-  )
+  );
 }

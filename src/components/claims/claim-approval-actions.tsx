@@ -1,51 +1,54 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface ClaimApprovalActionsProps {
-  claimId: string
-  userId: string
+  claimId: string;
+  userId: string;
 }
 
-export function ClaimApprovalActions({ claimId, userId }: ClaimApprovalActionsProps) {
-  const [comment, setComment] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+export function ClaimApprovalActions({
+  claimId,
+  userId,
+}: ClaimApprovalActionsProps) {
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleApproval = async (status: 'APPROVED' | 'REJECTED') => {
-    setError(null)
-    setLoading(true)
+  const handleApproval = async (status: "APPROVED" | "REJECTED") => {
+    setError(null);
+    setLoading(true);
 
     try {
       const response = await fetch(`/api/claims/${claimId}/approve`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           status,
           comment: comment.trim() || undefined,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || '審核失敗')
+        const data = await response.json();
+        throw new Error(data.error || "審核失敗");
       }
 
-      router.refresh()
+      router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : '發生錯誤')
+      setError(err instanceof Error ? err.message : "發生錯誤");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="border-yellow-200 bg-yellow-50">
@@ -74,21 +77,21 @@ export function ClaimApprovalActions({ claimId, userId }: ClaimApprovalActionsPr
         <div className="flex space-x-4">
           <Button
             variant="destructive"
-            onClick={() => handleApproval('REJECTED')}
+            onClick={() => handleApproval("REJECTED")}
             disabled={loading}
             className="flex-1"
           >
             拒絕
           </Button>
           <Button
-            onClick={() => handleApproval('APPROVED')}
+            onClick={() => handleApproval("APPROVED")}
             disabled={loading}
             className="flex-1"
           >
-            {loading ? '處理中...' : '核准'}
+            {loading ? "處理中..." : "核准"}
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

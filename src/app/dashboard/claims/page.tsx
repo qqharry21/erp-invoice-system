@@ -1,33 +1,39 @@
-import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { ClaimsList } from '@/components/claims/claims-list'
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ClaimsList } from "@/components/claims/claims-list";
 
 export default async function ClaimsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    return null
+    return null;
   }
 
   // Get or create user in database
   let dbUser = await prisma.user.findUnique({
     where: { email: user.email! },
-  })
+  });
 
   if (!dbUser) {
     dbUser = await prisma.user.create({
       data: {
         id: user.id,
         email: user.email!,
-        name: user.user_metadata?.name || user.email!.split('@')[0],
+        name: user.user_metadata?.name || user.email!.split("@")[0],
       },
-    })
+    });
   }
 
   // Fetch user's claims
@@ -41,8 +47,8 @@ export default async function ClaimsPage() {
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
-  })
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="space-y-6">
@@ -58,5 +64,5 @@ export default async function ClaimsPage() {
 
       <ClaimsList claims={claims} />
     </div>
-  )
+  );
 }

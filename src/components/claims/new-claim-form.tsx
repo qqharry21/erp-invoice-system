@@ -1,116 +1,118 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { createClient } from '@/lib/supabase/client'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { createClient } from "@/lib/supabase/client";
 
 interface NewClaimFormProps {
-  userId: string
-  userEmail: string
+  userId: string;
+  userEmail: string;
 }
 
 export function NewClaimForm({ userId, userEmail }: NewClaimFormProps) {
-  const [amount, setAmount] = useState('')
-  const [purpose, setPurpose] = useState('')
-  const [files, setFiles] = useState<File[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
-  const supabase = createClient()
+  const [amount, setAmount] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files)
+      const newFiles = Array.from(e.target.files);
 
       // Validate file types
-      const validTypes = ['image/jpeg', 'image/png', 'application/pdf']
-      const invalidFiles = newFiles.filter(file => !validTypes.includes(file.type))
+      const validTypes = ["image/jpeg", "image/png", "application/pdf"];
+      const invalidFiles = newFiles.filter(
+        (file) => !validTypes.includes(file.type),
+      );
 
       if (invalidFiles.length > 0) {
-        setError('只允許上傳 JPG、PNG 或 PDF 檔案')
-        return
+        setError("只允許上傳 JPG、PNG 或 PDF 檔案");
+        return;
       }
 
       // Validate file sizes (max 50MB)
-      const maxSize = 50 * 1024 * 1024
-      const oversizedFiles = newFiles.filter(file => file.size > maxSize)
+      const maxSize = 50 * 1024 * 1024;
+      const oversizedFiles = newFiles.filter((file) => file.size > maxSize);
 
       if (oversizedFiles.length > 0) {
-        setError('檔案大小不得超過 50MB')
-        return
+        setError("檔案大小不得超過 50MB");
+        return;
       }
 
-      setFiles([...files, ...newFiles])
-      setError(null)
+      setFiles([...files, ...newFiles]);
+      setError(null);
     }
-  }
+  };
 
   const handleRemoveFile = (index: number) => {
-    setFiles(files.filter((_, i) => i !== index))
-  }
+    setFiles(files.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent, isDraft: boolean = false) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     try {
       // Upload files to Supabase Storage
       const uploadedFiles = await Promise.all(
         files.map(async (file) => {
-          const fileExt = file.name.split('.').pop()
-          const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+          const fileExt = file.name.split(".").pop();
+          const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
           const { data, error: uploadError } = await supabase.storage
-            .from('invoices')
-            .upload(fileName, file)
+            .from("invoices")
+            .upload(fileName, file);
 
-          if (uploadError) throw uploadError
+          if (uploadError) throw uploadError;
 
-          const { data: { publicUrl } } = supabase.storage
-            .from('invoices')
-            .getPublicUrl(data.path)
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("invoices").getPublicUrl(data.path);
 
           return {
             fileName: file.name,
             fileUrl: publicUrl,
             fileSize: file.size,
             mimeType: file.type,
-          }
-        })
-      )
+          };
+        }),
+      );
 
       // Create claim
-      const response = await fetch('/api/claims', {
-        method: 'POST',
+      const response = await fetch("/api/claims", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           amount: parseFloat(amount),
           purpose,
-          status: isDraft ? 'DRAFT' : 'PENDING',
+          status: isDraft ? "DRAFT" : "PENDING",
           attachments: uploadedFiles,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || '建立請款失敗')
+        const data = await response.json();
+        throw new Error(data.error || "建立請款失敗");
       }
 
-      router.push('/dashboard/claims')
-      router.refresh()
+      router.push("/dashboard/claims");
+      router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : '發生錯誤')
+      setError(err instanceof Error ? err.message : "發生錯誤");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form className="space-y-6">
@@ -197,9 +199,9 @@ export function NewClaimForm({ userId, userEmail }: NewClaimFormProps) {
           onClick={(e) => handleSubmit(e, false)}
           disabled={loading}
         >
-          {loading ? '提交中...' : '提交請款'}
+          {loading ? "提交中..." : "提交請款"}
         </Button>
       </div>
     </form>
-  )
+  );
 }

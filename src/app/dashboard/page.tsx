@@ -1,12 +1,18 @@
-import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from "@/lib/supabase/server";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   return (
     <div className="space-y-6">
@@ -53,11 +59,9 @@ export default async function DashboardPage() {
           <CardDescription>您最近提交的請款單</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center text-gray-600 py-8">
-            尚無請款記錄
-          </div>
+          <div className="text-center text-gray-600 py-8">尚無請款記錄</div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,15 +1,21 @@
-import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { NewClaimForm } from '@/components/claims/new-claim-form'
+import { createClient } from "@/lib/supabase/server";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { NewClaimForm } from "@/components/claims/new-claim-form";
 
 export default async function NewClaimPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    return null
+    return null;
   }
 
   return (
@@ -29,5 +35,5 @@ export default async function NewClaimPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
